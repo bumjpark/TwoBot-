@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 메인 컨텐츠 영역 -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#121212"
+        android:padding="16dp">
+
+        <ImageButton
+            android:id="@+id/menuButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:contentDescription="메뉴 열기"
+            android:src="@drawable/ic_menu"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"/>
+
+        <!-- 상단 툴바 (MaterialToolbar) -->
+
+        <!-- 주제 입력 영역 -->
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="2dp"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/ThemeOverlay.MaterialComponents.ActionBar"
+            app:navigationIcon="@drawable/ic_menu"
+            app:title="챗봇 토론"
+            app:titleCentered="true" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/debateTopicLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/topAppBar"
+            android:layout_marginTop="16dp"
+            android:hint="토론 주제를 입력하세요."
+            app:boxBackgroundMode="filled"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:boxBackgroundColor="#1E1E1E">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/debateTopic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#BBBBBB"
+                android:textSize="16sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <!-- 안내 문구 -->
+        <TextView
+            android:id="@+id/debateGuideText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/debateTopicLayout"
+            android:layout_marginTop="12dp"
+            android:text="토론을 시작하면 챗봇의 의견이 번갈아 나타납니다."
+            android:textColor="#BBBBBB"
+            android:textSize="14sp" />
+
+        <!-- 토론 RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/debateRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_below="@id/debateGuideText"
+            android:layout_above="@id/buttonLayout"
+            android:layout_marginTop="16dp"/>
+
+        <!-- 하단 버튼 영역 -->
+        <LinearLayout
+            android:id="@+id/buttonLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:background="#1E1E1E">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/startDebateButton"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="토론 시작"
+                app:iconPadding="8dp"
+                app:iconTint="?attr/colorOnPrimary"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/stopDebateButton"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="토론 중지"
+                app:iconPadding="8dp"
+                app:iconTint="?attr/colorOnPrimary"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <!-- NavigationView -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigationView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:menu="@menu/menu_navigation"
+        />
+
+</androidx.drawerlayout.widget.DrawerLayout>

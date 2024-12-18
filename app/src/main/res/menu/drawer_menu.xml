@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_chatbots"
+        android:title="Two bot 선택" />
+
+    <item
+        android:id="@+id/nav_debate"
+        android:title="토론" />
+
+</menu>
