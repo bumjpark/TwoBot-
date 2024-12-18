@@ -46,6 +46,7 @@ Twobot은  두 개의 AI 챗봇인 Gemini와 ChatGPT를 동시에 활용하여 �
 3.챗지피티와 제미나이 토론하기
 
 
+#flask 서버
 ```
 from flask import Flask, request, jsonify
 import openai
@@ -192,6 +193,13 @@ if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
 
 ```
+
+#코드설명
+```
+flask_cors import CORS: CORS(Cross-Origin Resource Sharing)
+```
+ 허용을 위해 사용.
+```app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024```  # 요청 최대 크기: 32MB
 
 
 #실행화면
