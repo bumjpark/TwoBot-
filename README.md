@@ -198,9 +198,53 @@ if __name__ == '__main__':
 ```
 flask_cors import CORS: CORS(Cross-Origin Resource Sharing)
 ```
- 허용을 위해 사용.
-```app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024```  # 요청 최대 크기: 32MB
+CORS를 사용하는 이유:웹 브라우저에서 보안 정책상 적용되는 동일 출처 정책때문에 발생하는 요청 제한을 완화하여, 다른 도메인(출처)에서 오는 요청을 허용하기 위함입니다.
+```@app.route('/chat', methods=['POST'])``` 사용자가 메인화면에서 입력을하였을때 응답을 서버로부터 받기 위한 코드
+```@app.route('/debate', methods=['POST'])``` 토론화면에서 제미나이와 챗지피티가 서로 응답을 주고받기 위한 코드
 
+```
+# ChatGPT 차례
+    if current_speaker == "ChatGPT":
+        try:
+            chatgpt_prompt = [
+                {"role": "system", "content": f"You are participating in a debate on the topic '{topic}' and should respond concisely."}
+            ]
+            for msg in history:
+                role = "assistant" if msg['role'] == "ChatGPT" else "user"
+                chatgpt_prompt.append({"role": role, "content": msg['content']})
+
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=chatgpt_prompt,
+                max_tokens=200,
+                temperature=0.7
+            )
+            chatgpt_response = response['choices'][0]['message']['content'].strip()
+            chatgpt_response = remove_markdown_formatting(chatgpt_response)
+            history.append({"role": "ChatGPT", "content": chatgpt_response})
+
+        except Exception as e:
+            chatgpt_response = f"ChatGPT Error: {str(e)}"
+            history.append({"role": "ChatGPT", "content": chatgpt_response})
+```
+ChatGPT 차례이면 ChatGPT에게 system 메시지(토론 규칙)와 지금까지의 history를 assistant/user 역할로 변환해 전달.
+응답 받으면 history에 추가.
+```
+    # Gemini 차례
+    else:
+        try:
+            history_str = "\n".join([f"{msg['role']}: {msg['content']}" for msg in history])
+            gemini_prompt = f"{history_str}\nGemini: {topic}에 대해 이전 논점을 반박하거나 새로운 관점으로 의견을 제시해 주세요."
+            gemini_model = genai.GenerativeModel("gemini-pro")
+            gemini_response = gemini_model.generate_content(gemini_prompt).text.strip()
+            gemini_response = remove_markdown_formatting(gemini_response)
+            history.append({"role": "Gemini", "content": gemini_response})
+
+        except Exception as e:
+            gemini_response = f"Gemini Error: {str(e)}"
+            history.append({"role": "Gemini", "content": gemini_response})
+
+```
 
 #실행화면
 
