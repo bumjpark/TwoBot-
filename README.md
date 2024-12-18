@@ -45,6 +45,8 @@ Twobot은  두 개의 AI 챗봇인 Gemini와 ChatGPT를 동시에 활용하여 �
 
 3.챗지피티와 제미나이 토론하기
 
+
+
 #실행화면
 
 
@@ -67,5 +69,13 @@ Twobot은  두 개의 AI 챗봇인 Gemini와 ChatGPT를 동시에 활용하여 �
 #실행영상
 [https://drive.google.com/file/d/1t1_depPQAgZlDBDmDrvYjaBr7oKDDVRo](https://drive.google.com/file/d/1t1_depPQAgZlDBDmDrvYjaBr7oKDDVRo)
 
+
+
+
+#아쉬웠던점,추후에 하고싶은것들
+기록부분에서 메세지형태로 똑같은 형식으로 기록하기
+기록을 여러개로 나눠서 따로 구분하기
+챗지피티,제미나이 말고도 다른 api들 사용하여 코드를 줬을때 서로 다른 챗봇들이 토론을 할 수 있도록 만들어보는것
+ui를조금 더 사용자 측면에서 보기 좋게 만드는것.
 
 
