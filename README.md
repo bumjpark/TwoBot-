@@ -246,6 +246,131 @@ ChatGPT 차례이면 ChatGPT에게 system 메시지(토론 규칙)와 지금까�
 
 ```
 
+
+#Android Studio에서 주요 코드
+
+```
+private void sendChatRequest() {
+    String prompt = inputField.getText().toString().trim();
+    if (prompt.isEmpty()) {
+        Toast.makeText(this, "질문을 입력하세요.", Toast.LENGTH_SHORT).show();
+        return;
+    }
+
+    // 사용자 메시지를 히스토리에 추가
+    chatHistory.add(new ChatMessage("User", prompt));
+    geminiChatHistory.add(new ChatMessage("User", prompt));
+    chatGptChatHistory.add(new ChatMessage("User", prompt));
+
+    // 서버로 보낼 JSON 구성
+    JSONArray historyArray = new JSONArray();
+    try {
+        for (ChatMessage message : chatGptChatHistory) {
+            JSONObject msgObj = new JSONObject();
+            String role = message.getSender().equals("User") ? "user" : "assistant";
+            msgObj.put("role", role);
+            msgObj.put("content", message.getMessage());
+            historyArray.put(msgObj);
+        }
+    } catch (JSONException e) {
+        e.printStackTrace();
+        return;
+    }
+
+    JSONObject requestBody = new JSONObject();
+    try {
+        requestBody.put("prompt", prompt);
+        requestBody.put("history", historyArray);
+    } catch (JSONException e) {
+        e.printStackTrace();
+        return;
+    }
+
+    // Volley를 통한 서버 요청
+    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+            Request.Method.POST,
+            "http://10.0.2.2:5000/chat",
+            requestBody,
+            response -> {
+                // 응답 처리 콜백 (2번 설명 부분)
+            },
+            error -> {
+                Toast.makeText(MainActivity.this, "서버 연결 실패: " + error.toString(), Toast.LENGTH_SHORT).show();
+                error.printStackTrace();
+            }
+    );
+
+    // 요청 큐에 추가
+    requestQueue.add(jsonObjectRequest);
+
+    // 입력 필드 초기화
+    inputField.setText("");
+}
+
+```
+사용자가 EditText에 입력한 텍스트를 가져와 유효성 검사(비어있는지 확인) 후, 대화 기록 리스트(chatHistory, geminiChatHistory, chatGptChatHistory)에 사용자 메시지를 추가합니다.
+
+chatGptChatHistory를 바탕으로 JSON 형태의 historyArray를 생성하고, requestBody에 prompt와 history를 담아 Flask 서버(/chat 엔드포인트)에 POST 요청을 보냅니다.
+
+Volley 라이브러리 사용: 서버 응답이 비동기로 도착하면 response 콜백에서 응답 처리(아래 2번) 수행.
+
+입력 필드 초기화로 다음 메시지 입력 준비.
+
+```
+JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+    Request.Method.POST,
+    "http://10.0.2.2:5000/chat",
+    requestBody,
+    response -> {
+        try {
+            String chatGpt = response.getString("chatgpt_response");
+            String gemini = response.getString("gemini_response");
+
+            // 서버 응답을 히스토리에 추가
+            geminiChatHistory.add(new ChatMessage("Gemini", gemini));
+            chatGptChatHistory.add(new ChatMessage("ChatGPT", chatGpt));
+            chatHistory.add(new ChatMessage("Gemini", gemini));
+            chatHistory.add(new ChatMessage("ChatGPT", chatGpt));
+
+            // UI 업데이트
+            updateChatViews();
+
+            // 초기 메시지 숨기기 및 카드 보이기
+            initialMessage.setVisibility(View.GONE);
+            findViewById(R.id.geminiCard).setVisibility(View.VISIBLE);
+            findViewById(R.id.chatGptCard).setVisibility(View.VISIBLE);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(MainActivity.this, "응답 처리 중 오류 발생", Toast.LENGTH_SHORT).show();
+        }
+    },
+    error -> {
+        Toast.makeText(MainActivity.this, "서버 연결 실패: " + error.toString(), Toast.LENGTH_SHORT).show();
+        error.printStackTrace();
+    }
+);
+
+```
+서버가 반환한 JSON 응답에서 chatgpt_response와 gemini_response를 추출합니다.
+
+이 응답들을 geminiChatHistory, chatGptChatHistory, chatHistory에 추가해 기록을 갱신.
+
+updateChatViews()를 호출하여 RecyclerView에 새로운 메시지를 반영하고, 스크롤을 최신 메시지 위치로 이동.
+
+초기 소개 메시지를 숨기고, Gemini/ChatGPT 카드뷰를 표시해 대화 상태를 시각적으로 반영.
+
+```
+private void updateChatViews() {
+    geminiAdapter.notifyDataSetChanged();
+    chatGptAdapter.notifyDataSetChanged();
+
+    geminiRecyclerView.scrollToPosition(geminiChatHistory.size() - 1);
+    chatGptRecyclerView.scrollToPosition(chatGptChatHistory.size() - 1);
+}
+```
+어댑터에 데이터 변경 사항을 알려 UI를 갱신하고, RecyclerView를 마지막 메시지로 스크롤하여 사용자가 항상 최신 응답을 볼 수 있도록 합니다.
+
 #실행화면
 
 
@@ -281,4 +406,5 @@ ChatGPT 차례이면 ChatGPT에게 system 메시지(토론 규칙)와 지금까�
 
 ui를조금 더 사용자 측면에서 보기 좋게 만드는것.
 
+새로운 패이지 버튼을 추가하여 페이지를 초기화하고 이전 페이지는 기록하는것.
 
